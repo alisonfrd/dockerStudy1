@@ -1,6 +1,12 @@
+version: "3.8"
+
 services:
   db:
     image: mongo:4.2
+    deploy:
+      replicas: 8
+      placement:
+        constraints: [node.role==worker]
     container_name: db
     restart: always
     ports:
@@ -9,10 +15,21 @@ services:
       MONGO_INITDB_DATABASE: ProjectCompDist
       MONGO_INITDB_ROOT_USERNAME: alisondomingos
       MONGO_INITDB_ROOT_PASSWORD: gEo43utzu1T5Ufyq
+  visualizer:
+    image: dockersamples/visualizer:stable 
+    ports:
+      - "8888:8080"
     volumes:
-      - dbdata:/data/db # Persistir dados usando volumes
+      - "/var/run/docker.sock:/var/run/docker.sock" 
+    deploy:
+      placement:
+        constraints: [ node.role == manager ]
   api:
     image: node:latest
+    deploy:
+      replicas: 8
+      placement:
+        constraints: [node.role==worker]
     container_name: api
     restart: always
     depends_on:
