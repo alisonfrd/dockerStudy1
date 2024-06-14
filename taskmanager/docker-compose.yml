@@ -4,13 +4,13 @@ services:
   db:
     image: mongo:4.2
     deploy:
-      replicas: 1
+      replicas: 8
       placement:
         constraints: [node.role == worker]
     container_name: db
     restart: always
     ports:
-      - "27017:27017"
+      - "8000:80"
     environment:
       MONGO_INITDB_DATABASE: ProjectCompDist
       MONGO_INITDB_ROOT_USERNAME: alisondomingos
