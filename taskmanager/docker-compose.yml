@@ -4,9 +4,9 @@ services:
   db:
     image: mongo:4.2
     deploy:
-      replicas: 8
+      replicas: 1  # Apenas uma réplica para o banco de dados principal
       placement:
-        constraints: [node.role==worker]
+        constraints: [node.role == worker]
     container_name: db
     restart: always
     ports:
@@ -15,27 +15,32 @@ services:
       MONGO_INITDB_DATABASE: ProjectCompDist
       MONGO_INITDB_ROOT_USERNAME: alisondomingos
       MONGO_INITDB_ROOT_PASSWORD: gEo43utzu1T5Ufyq
+
   visualizer:
     image: dockersamples/visualizer:stable 
     ports:
       - "8888:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock" 
+      - "/var/run/docker.sock:/var/run/docker.sock"
     deploy:
       placement:
-        constraints: [ node.role == manager ]
+        constraints: [node.role == manager]
+
   api:
     image: node:latest
     deploy:
-      replicas: 8
+      replicas: 8  # Várias réplicas para a API
       placement:
-        constraints: [node.role==worker]
+        constraints: [node.role == worker]
     container_name: api
     restart: always
     depends_on:
       - db
     ports:
-      - "3000:3000"
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: host  # Modo de rede para balanceamento de carga
     working_dir: /usr/src/app
     command: npm run start
     logging:
@@ -43,5 +48,3 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-
-
