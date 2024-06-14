@@ -36,8 +36,6 @@ services:
       - db
     ports:
       - "3000:3000"
-    volumes:
-      - .:/usr/src/app
     working_dir: /usr/src/app
     command: npm run start
     logging:
@@ -46,5 +44,4 @@ services:
         max-size: "10m"
         max-file: "5"
 
-volumes:
-  dbdata:
+
